@@ -21,7 +21,7 @@ pip install chromedriver-binary==<Chromeバージョン>
 
 # 実行方法
 ```
-python3 nanaco_transiter "ギフトコードのURL" ["ギフトコードのURL" ...]
+python3 nanaco_transiter.py "ギフトコードのURL" ["ギフトコードのURL" ...]
 ```
 
 # その他
