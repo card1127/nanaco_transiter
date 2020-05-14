@@ -2,7 +2,6 @@
 import time
 import re
 from sys import argv
-import requests
 import selenium
 from selenium import webdriver
 
