@@ -6,9 +6,9 @@ import requests
 import selenium
 from selenium import webdriver
 
-userName = "588746-8119"
-nanacoNo = "7600005601333923"
-securityCode = "0133656"
+userName = "" # <- 購入した福利厚生のIDを6桁と4桁で入力してください(例: 012345-6789)
+nanacoNo = "" # <- nanaco番号16桁を入力してください(例: 0123456789012345)
+securityCode = "" # <- カード記載の番号を7桁で入力してください(例: 0123456)
 
 def getGiftCodes(driver, url):
     driver.get(url)
