@@ -4,27 +4,38 @@
 
 # 環境
 - Chrome
+- Python3
 - Selenium
 - Selenium Chrome Webdriver
 
 # スクリプト実行までの準備(初回限定)
 1. cloneします。
-```
-git clone https://github.com/card1127/nanaco_transiter.git
-```
+    ```
+    git clone https://github.com/card1127/nanaco_transiter.git
+    ```
 
-1. 追加ライブラリをインストールします。
-```
-pip install selenium
-pip install chromedriver-binary==<Chromeバージョン>
-```
+1. [最新のPython3](https://www.python.org/downloads/)をインストールします。すでにインストールされている場合は次の手順に進んでください。
+
+1. [最新のChrome](https://www.google.co.jp/chrome/)をインストールします。すでにインストール済みの場合は次の手順に進んでください。
+
+1. 追加ライブラリをインストールします。Windowsならコマンドプロンプト、Macならターミナルで下記コマンドを実行してください。
+※環境に応じて`pip`または`pip3`で実行してください。
+    ```
+    pip3 install selenium
+    pip3 install chromedriver-binary
+    ```
+
+1. 福利厚生倶楽部のIDやnanaco番号などをスクリプトに記載します。この手順をスキップした場合、実行時に尋ねられるのでそこで入力しても問題ありません。
 
 # 実行方法
+Windowsならコマンドプロンプト、Macならターミナルで下記コマンドを実行してください。
+※環境に応じて`python`または`python3`で実行してください。
 ```
 python3 nanaco_transiter.py "ギフトコードのURL" ["ギフトコードのURL" ...]
 ```
 
 # その他
+- 引数に何も入力せずに実行した場合、実行時にURLを尋ねられるのでそこで入力してください。
 - 引数のURLは""で括る必要があります。括らない場合、文字列中の&をシェル命令の&と解釈されてしまい正しく動作しません。
 - 細かなエラー処理は実装していません。本来の使い方でご使用ください。
 - ギフトコードの登録中に落ちてしまっても、再実行すれば問題なく登録できます。ただし、重複して登録したものは"MISSED"としてカウントされます。
@@ -32,4 +43,4 @@ python3 nanaco_transiter.py "ギフトコードのURL" ["ギフトコードのUR
 
 # 免責
 - このスクリプトの実行は全て自己責任でお願いします。
-- このスクリプトに悪意ある動作は含んでいませんが、万一不具合によって実行者が被害を被ったとしても、作者は一切の責任を負いませんのでご注意ください。
+- このスクリプトに悪意ある動作は含めていませんが、万一不具合によって実行者が被害を被ったとしても、作者は一切の責任を負いませんのでご注意ください。

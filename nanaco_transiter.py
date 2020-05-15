@@ -5,7 +5,7 @@ from sys import argv
 import selenium
 from selenium import webdriver
 
-userName = "" # <- 購入した福利厚生のIDを6桁と4桁で入力してください(例: 012345-6789)
+userName = "" # <- 購入した福利厚生倶楽部のIDを6桁と4桁で入力してください(例: 012345-6789)
 nanacoNo = "" # <- nanaco番号16桁を入力してください(例: 0123456789012345)
 securityCode = "" # <- カード記載の番号を7桁で入力してください(例: 0123456)
 
@@ -37,15 +37,15 @@ def registGiftCode(driver, code):
     time.sleep(0.3)
     driver.switch_to.window(driver.window_handles[1]) # 直前に開いた新規ウィンドウをカレントにする
 
-    driver.find_element_by_id("gift01").send_keys(code[:4])
-    driver.find_element_by_id("gift02").send_keys(code[4:8])
-    driver.find_element_by_id("gift03").send_keys(code[8:12])
-    driver.find_element_by_id("gift04").send_keys(code[12:])
-
-    driver.find_element_by_id("submit-button").click()
-    time.sleep(0.1)
-    result = True
     try:
+        driver.find_element_by_id("gift01").send_keys(code[:4])
+        driver.find_element_by_id("gift02").send_keys(code[4:8])
+        driver.find_element_by_id("gift03").send_keys(code[8:12])
+        driver.find_element_by_id("gift04").send_keys(code[12:])
+
+        driver.find_element_by_id("submit-button").click()
+        time.sleep(0.1)
+        result = True
         driver.find_element_by_xpath("//input[@alt=\"登録する\"]").click()
     except selenium.common.exceptions.NoSuchElementException:
         # 10秒以上経っても「登録する」ボタンが出てこない場合、タイムアウトとする
@@ -55,13 +55,38 @@ def registGiftCode(driver, code):
     driver.switch_to.window(driver.window_handles[0]) # nanacoページのウィンドウをカレントにする
     return result
 
+def checkEnviroment(arg):
+    global userName, nanacoNo, securityCode
+    if not userName:
+        print("購入した福利厚生倶楽部のIDを6桁と4桁で入力してください(例: 012345-6789)")
+        userName = input()
+    if not nanacoNo:
+        print("nanaco番号16桁を入力してください(例: 0123456789012345)")
+        nanacoNo = input()
+    if not securityCode:
+        print("カード記載の番号を7桁で入力してください(例: 0123456)")
+        securityCode = input()
+    if len(arg) < 2:
+        print("メールに記載された、nanacoギフトコードを表示するためのURLを1つずつ入力してください。")
+        print("全て入力し終わったら、0と入力してください。")
+        urls = []
+        while True:
+            url = input().strip()
+            if url == "0":
+                break
+            elif url != "":
+                urls.append(url)
+        return urls
+    return arg[1:]
+
 if __name__ == "__main__":
+    urls = checkEnviroment(argv)
     print("Preparing...")
     driver = selenium.webdriver.Chrome()
     driver.set_page_load_timeout(10)
     print("Getting gift codes ...")
     giftCodes = []
-    for url in argv[1:]:
+    for url in urls:
         giftCodes += getGiftCodes(driver, url)
     print("Logging in nanaco website ...")
     loginNanaco(driver)
@@ -72,9 +97,10 @@ if __name__ == "__main__":
         print(giftCode, "...", end = "\r")
         if registGiftCode(driver, giftCode):
             sucseeded += 1
-            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "Done")
+            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "OK")
         else:
             missed += 1
             print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "MISSED\a")
     print("Sucseeded:", sucseeded, "    Missed:", missed, "    Total:", sucseeded + missed)
     driver.find_element_by_id("memberInfoInner").click()
+    driver.quit()
