@@ -10,7 +10,7 @@ nanacoNo = "" # <- nanaco番号16桁を入力してください(例: 01234567890
 securityCode = "" # <- カード記載の番号を7桁で入力してください(例: 0123456)
 
 def getGiftCodes(driver, url):
-    driver.get(url)
+    driver.get(url.strip())
     driver.find_element_by_name("kainno").send_keys(userName)
     driver.find_element_by_class_name("next").click()
     elements = driver.find_elements_by_css_selector(".table_gift tbody tr")
@@ -34,7 +34,7 @@ def loginNanaco(driver):
 # セッション内でギフトコードを登録する
 def registGiftCode(driver, code):
     driver.find_element_by_xpath("//input[@alt=\"ご利用約款に同意の上、登録\"]").click() # ここで新規ウィンドウが開く
-    time.sleep(0.3)
+    time.sleep(1)
     driver.switch_to.window(driver.window_handles[1]) # 直前に開いた新規ウィンドウをカレントにする
 
     try:
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     urls = checkEnviroment(argv)
     print("Preparing...")
     driver = selenium.webdriver.Chrome()
-    driver.set_page_load_timeout(10)
+    driver.set_page_load_timeout(30)
     print("Getting gift codes ...")
     giftCodes = []
     for url in urls:
