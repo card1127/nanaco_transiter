@@ -97,10 +97,10 @@ if __name__ == "__main__":
         print(giftCode, "...", end = "\r")
         if registGiftCode(driver, giftCode):
             sucseeded += 1
-            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "OK")
+            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "Succeeded")
         else:
             missed += 1
-            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "MISSED\a")
-    print("Sucseeded:", sucseeded, "    Missed:", missed, "    Total:", sucseeded + missed)
+            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "Missed\a")
+    print("Succeeded:", sucseeded, "    Missed:", missed, "    Total:", sucseeded + missed)
     driver.find_element_by_id("memberInfoInner").click()
     driver.quit()
