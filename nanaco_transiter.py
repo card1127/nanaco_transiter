@@ -45,11 +45,10 @@ def registGiftCode(driver, code):
 
         driver.find_element_by_id("submit-button").click()
         time.sleep(0.1)
-        result = True
+        result = "Succeeded"
         driver.find_element_by_xpath("//input[@alt=\"登録する\"]").click()
     except selenium.common.exceptions.NoSuchElementException:
-        # 10秒以上経っても「登録する」ボタンが出てこない場合、タイムアウトとする
-        result = False
+        result = "Duplicated" if "このギフトIDは、すでに下記の通り登録済です。" in driver.page_source else "Missed"
     time.sleep(0.1)
     driver.close() # カレントウィンドウ(さっき開いた新規ウィンドウ)を閉じる
     driver.switch_to.window(driver.window_handles[0]) # nanacoページのウィンドウをカレントにする
@@ -90,17 +89,19 @@ if __name__ == "__main__":
         giftCodes += getGiftCodes(driver, url)
     print("Logging in nanaco website ...")
     loginNanaco(driver)
-    sucseeded = 0
-    missed = 0
+
+    progress = {}
     print("Registing codes ...")
     for giftCode in giftCodes:
         print(giftCode, "...", end = "\r")
-        if registGiftCode(driver, giftCode):
-            sucseeded += 1
-            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "Succeeded")
-        else:
-            missed += 1
-            print(giftCode, "(%d/%d)" % (sucseeded + missed, len(giftCodes)), "Missed\a")
-    print("Succeeded:", sucseeded, "    Missed:", missed, "    Total:", sucseeded + missed)
+        result = registGiftCode(driver, giftCode)
+        if not result in progress:
+            progress[result] = 0
+        progress[result] += 1
+        print(giftCode, "(%d/%d)" % (sum(progress.values()), len(giftCodes)), result)
+
+    for key in progress:
+        print(key + ":", progress[key])
+    print("Total:", sum(progress.values()))
     driver.find_element_by_id("memberInfoInner").click()
     driver.quit()
