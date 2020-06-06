@@ -32,7 +32,7 @@ def loginNanaco(driver):
     time.sleep(1)
 
 # セッション内でギフトコードを登録する
-def registGiftCode(driver, code):
+def registGiftCode(driver, code, continueCount = 0):
     driver.find_element_by_xpath("//input[@alt=\"ご利用約款に同意の上、登録\"]").click() # ここで新規ウィンドウが開く
     time.sleep(1)
     driver.switch_to.window(driver.window_handles[1]) # 直前に開いた新規ウィンドウをカレントにする
@@ -52,8 +52,10 @@ def registGiftCode(driver, code):
     time.sleep(0.1)
     driver.close() # カレントウィンドウ(さっき開いた新規ウィンドウ)を閉じる
     driver.switch_to.window(driver.window_handles[0]) # nanacoページのウィンドウをカレントにする
-    return result
+    return result if result != "Missed" or continueCount >= 5 else registGiftCode(driver, code, continueCount + 1)
 
+# 入力内容を整理して正しくスクリプトが動作するようにする
+# 必要変数が空の場合、対話形式で補完していく
 def checkEnviroment(arg):
     global userName, nanacoNo, securityCode
     if not userName:
@@ -65,28 +67,35 @@ def checkEnviroment(arg):
     if not securityCode:
         print("カード記載の番号を7桁で入力してください(例: 0123456)")
         securityCode = input()
+    urlsOrGiftCodes = []
     if len(arg) < 2:
-        print("メールに記載された、nanacoギフトコードを表示するためのURLを1つずつ入力してください。")
-        print("全て入力し終わったら、0と入力してください。")
-        urls = []
+        print("nanacoギフトコード、またはnanacoギフトコードを表示するためのURLを1行ずつ入力してください。")
+        print("全て入力し終わったら、何も入力せずにEnterを押してください。")
         while True:
-            url = input().strip()
-            if url == "0":
+            code = input()
+            if urlsOrGiftCodes and not bool(code):
                 break
-            elif url != "":
-                urls.append(url)
-        return urls
-    return arg[1:]
+            if code.strip() != "":
+                urlsOrGiftCodes.append(code.strip())
+    else:
+        for code in arg[1:]:
+            urlsOrGiftCodes.append(code.strip())
+    return urlsOrGiftCodes
 
 if __name__ == "__main__":
-    urls = checkEnviroment(argv)
+    urlsOrGiftCodes = checkEnviroment(argv)
     print("Preparing...")
     driver = selenium.webdriver.Chrome()
     driver.set_page_load_timeout(30)
     print("Getting gift codes ...")
     giftCodes = []
-    for url in urls:
-        giftCodes += getGiftCodes(driver, url)
+    for code in urlsOrGiftCodes:
+        # 入力内容がURLの場合、コードを取得しにいく
+        if code[:8] == "https://":
+            giftCodes += getGiftCodes(driver, code)
+        # 入力内容がURLでない場合、それがギフトコードとして扱う
+        else:
+            giftCodes.append(code)
     print("Logging in nanaco website ...")
     loginNanaco(driver)
 
